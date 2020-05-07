@@ -1,0 +1,19 @@
+{
+  "name": "pgn-digitizer",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "author": "Erik Davtyan",
+  "license": "MIT",
+  "scripts": {
+    "start": "node build/index.js",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "chess.js": "^0.10.3",
+    "leven": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/chess.js": "^0.10.1",
+    "@types/node": "^13.13.4"
+  }
+}
