@@ -38,6 +38,6 @@ const traverseGame = (moves) => {
     moves.forEach((currMove) => {
         move(game, currMove);
     });
-    console.log(game.pgn());
+    return game.pgn();
 };
 exports.default = traverseGame;

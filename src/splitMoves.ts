@@ -15,12 +15,13 @@ function mask(str) {
 const splitMoves = (pgn: string) => {
   const masked = mask(pgn);
 
-  /* delete move numbers */
+  /* Delete move numbers */
   const movesString = masked.replace(/\d+\.(\.\.)?/g, "");
 
-  /* trim and get array of moves */
+  /* Trim and get array of moves */
   const moves = trim(movesString).split(new RegExp(/\s+/));
-  return moves;
+  /* Remove result */
+  return moves.slice(0, moves.length - 1);
 };
 
 export default splitMoves;

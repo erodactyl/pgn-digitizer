@@ -39,7 +39,7 @@ const traverseGame = (moves: string[]) => {
     move(game, currMove);
   });
 
-  console.log(game.pgn());
+  return game.pgn();
 };
 
 export default traverseGame;

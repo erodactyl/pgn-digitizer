@@ -11,6 +11,6 @@ const splitMoves = (pgn) => {
     const masked = mask(pgn);
     const movesString = masked.replace(/\d+\.(\.\.)?/g, "");
     const moves = trim(movesString).split(new RegExp(/\s+/));
-    return moves;
+    return moves.slice(0, moves.length - 1);
 };
 exports.default = splitMoves;
