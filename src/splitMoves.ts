@@ -9,19 +9,22 @@ function mask(str) {
 }
 
 /**
- * Collect all moves from a pgn string into an array
+ * Collect all moves (e.g. e2 e4) from a pgn string into an array
  * @param pgn
  */
 const splitMoves = (pgn: string) => {
   const masked = mask(pgn);
 
   /* Delete move numbers */
-  const movesString = masked.replace(/\d+\.(\.\.)?/g, "");
+  const movesString = masked.replace(/\d+\.(\.\.)?/g, ":");
 
   /* Trim and get array of moves */
-  const moves = trim(movesString).split(new RegExp(/\s+/));
+  const dirtyMoves = trim(movesString).split(new RegExp(":"));
+
+  const moves = dirtyMoves.slice(1).map((move) => move.trim());
+
   /* Remove result */
-  return moves.slice(0, moves.length - 1);
+  return moves;
 };
 
 export default splitMoves;

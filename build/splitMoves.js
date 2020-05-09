@@ -9,8 +9,9 @@ function mask(str) {
 }
 const splitMoves = (pgn) => {
     const masked = mask(pgn);
-    const movesString = masked.replace(/\d+\.(\.\.)?/g, "");
-    const moves = trim(movesString).split(new RegExp(/\s+/));
-    return moves.slice(0, moves.length - 1);
+    const movesString = masked.replace(/\d+\.(\.\.)?/g, ":");
+    const dirtyMoves = trim(movesString).split(new RegExp(":"));
+    const moves = dirtyMoves.slice(1).map((move) => move.trim());
+    return moves;
 };
 exports.default = splitMoves;

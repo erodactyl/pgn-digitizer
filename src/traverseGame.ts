@@ -26,7 +26,9 @@ const move = (game: ChessInstance, moveStr: string) => {
   } catch (e) {
     const legalMoves = game.moves();
     const closestMove = getClosestMove(moveStr, legalMoves);
-    return game.move(closestMove);
+    const moved = game.move(closestMove);
+
+    return moved;
   }
 };
 
