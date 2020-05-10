@@ -1,55 +1,8 @@
-import scanImage from "./scanImage";
-import path from "path";
-import splitMoves from "./splitMoves";
 import fs from "fs";
-import traverseGame from "./traverseGame";
-import { Chess } from "chess.js";
-import leven from "leven";
 import summary from "./summary";
 import akopianGames from "./akopianGames.json";
-
-const moveDifferences = (scanned: string[], real: string[]) => {
-  let count = 0;
-  for (let i = 0; i < scanned.length; i++) {
-    if (scanned[i] !== real[i]) {
-      // console.log(`Scanned is: ${scanned[i]} with length ${scanned[i].length}`);
-      // console.log(`Real is: ${real[i]} with length ${real[i].length}`);
-      // console.log("\n");
-      count++;
-    }
-  }
-
-  // console.log(count);
-  return count;
-};
-
-const getGame = (id: number) => {
-  return akopianGames[id.toString()];
-};
-
-const run = async (id: number): Promise<number> => {
-  try {
-    const scannedPgn = await scanImage(
-      path.join(__dirname, "..", "images", `${id}.png`)
-    );
-
-    const moves = splitMoves(scannedPgn);
-
-    const realMoves = splitMoves(getGame(id));
-
-    return moveDifferences(moves, realMoves);
-
-    // const pgn = traverseGame(moves);
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-const saveOutliers = (outliers: { id: string; diff: number }[]) => {
-  const obj = { outliers };
-  const json = JSON.stringify(obj);
-  fs.writeFile("outliers.json", json, () => {});
-};
+import getScannedGame from "./getScannedGame";
+import saveOutliers from "./saveOutliers";
 
 const main = async () => {
   let diffs: number[] = [];
@@ -70,7 +23,7 @@ const main = async () => {
 
     const currDiffs = await Promise.all(
       currBatch.map(async (key) => {
-        const diff = await run(Number(key));
+        const diff = await getScannedGame(key);
         if (diff > 10) {
           console.log(`Difference for game ${key} is ${diff}`);
           outlierGames.push({ id: key, diff });
@@ -90,7 +43,13 @@ const main = async () => {
   saveOutliers(outlierGames);
 
   const json = JSON.stringify({ diffs });
-  fs.writeFile("firstAnalysis.json", json, () => {});
+  fs.writeFile("secondAnalysis.json", json, () => {});
 };
 
-main();
+// main();
+
+const run = async () => {
+  console.log(await getScannedGame("2"));
+};
+
+run();

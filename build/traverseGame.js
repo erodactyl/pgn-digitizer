@@ -1,37 +1,47 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const chess_js_1 = require("chess.js");
-const leven_1 = __importDefault(require("leven"));
-const getClosestMove = (illegalStr, legalMoves) => {
-    const movesByCloseness = legalMoves.map((move) => {
-        const dist = leven_1.default(illegalStr, move);
-        return { move, dist };
+const getEditDistance_1 = require("./getEditDistance");
+const getLegalDoubleMovesFromPosition = (game) => {
+    const currMoves = game.moves();
+    const doubleMoves = [];
+    currMoves.forEach((currMove) => {
+        game.move(currMove);
+        const secondMoves = game.moves();
+        const currDoubleMoves = secondMoves.map((sm) => `${currMove} ${sm}`);
+        doubleMoves.push(...currDoubleMoves);
+        game.undo();
     });
-    movesByCloseness.sort((a, b) => {
-        if (a.dist > b.dist)
-            return 1;
-        else if (a.dist < b.dist)
-            return -1;
-        return 0;
-    });
-    return movesByCloseness[0].move;
+    return doubleMoves;
 };
-const move = (game, moveStr) => {
+const move = (game, doubleMoveStr) => {
+    const singleMoves = doubleMoveStr.split(" ");
     try {
-        const moved = game.move(moveStr);
+        const moved = game.move(singleMoves[0]);
         if (moved === null) {
-            throw new Error("Illegal move");
+            throw new Error("Illegal first move");
         }
-        return moved;
+        const secondMoved = game.move(singleMoves[1]);
+        if (secondMoved === null) {
+            throw new Error("Illegal second move");
+        }
+        return game;
     }
     catch (e) {
-        const legalMoves = game.moves();
-        const closestMove = getClosestMove(moveStr, legalMoves);
-        const moved = game.move(closestMove);
-        return moved;
+        if (e.message === "Illegal first move") {
+            const legalMoves = getLegalDoubleMovesFromPosition(game);
+            const closestMoves = getEditDistance_1.getClosestTarget(doubleMoveStr, legalMoves);
+            const singleMoves = closestMoves.target.split(" ");
+            console.log(`Swapping out ${doubleMoveStr} for ${closestMoves.target}`);
+            game.move(singleMoves[0]);
+            game.move(singleMoves[1]);
+        }
+        else if (e.message === "Illegal second move") {
+            const legalMoves = game.moves();
+            const closestMove = getEditDistance_1.getClosestTarget(singleMoves[1], legalMoves);
+            game.move(closestMove.target);
+        }
+        return game;
     }
 };
 const traverseGame = (moves) => {
@@ -39,6 +49,7 @@ const traverseGame = (moves) => {
     moves.forEach((currMove) => {
         move(game, currMove);
     });
+    console.log(game.pgn());
     return game.pgn();
 };
 exports.default = traverseGame;
