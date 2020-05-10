@@ -5,7 +5,7 @@ import io
 import sys
 
 script_dir = os.path.dirname(__file__)
-config = "-c tessedit_char_whitelist=0123456789.abcdefghO-QKNBR+#x\ "
+config = "-c tessedit_char_whitelist=0123456789.abcdefghO-QKNBR=+#x\ "
 
 
 def getPgnFromPic(path):

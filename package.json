@@ -9,7 +9,9 @@
     "watch": "tsc -w"
   },
   "dependencies": {
+    "@types/d3": "^5.7.2",
     "chess.js": "^0.10.3",
+    "d3": "^5.16.0",
     "leven": "^3.1.0"
   },
   "devDependencies": {

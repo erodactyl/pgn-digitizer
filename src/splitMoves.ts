@@ -21,7 +21,10 @@ const splitMoves = (pgn: string) => {
   /* Trim and get array of moves */
   const dirtyMoves = trim(movesString).split(new RegExp(":"));
 
-  const moves = dirtyMoves.slice(1).map((move) => move.trim());
+  /* Remove unnecessary spaces from each move */
+  const moves = dirtyMoves
+    .slice(1)
+    .map((move) => move.trim().replace(/\s\s+/g, " "));
 
   /* Remove result */
   return moves;

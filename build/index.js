@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const scanImage_1 = __importDefault(require("./scanImage"));
 const path_1 = __importDefault(require("path"));
 const splitMoves_1 = __importDefault(require("./splitMoves"));
+const fs_1 = __importDefault(require("fs"));
+const summary_1 = __importDefault(require("./summary"));
 const akopianGames_json_1 = __importDefault(require("./akopianGames.json"));
 const moveDifferences = (scanned, real) => {
     let count = 0;
@@ -39,23 +41,38 @@ const run = (id) => __awaiter(void 0, void 0, void 0, function* () {
         console.error(e);
     }
 });
+const saveOutliers = (outliers) => {
+    const obj = { outliers };
+    const json = JSON.stringify(obj);
+    fs_1.default.writeFile("outliers.json", json, () => { });
+};
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     let diffs = [];
     const keys = Object.keys(akopianGames_json_1.default);
-    const sliceLength = 20;
-    const sliceStarts = [];
-    for (let left = 0; left < keys.length; left += sliceLength) {
-        sliceStarts.push(left);
+    const batchSize = 20;
+    const batchStarts = [];
+    const outlierGames = [];
+    for (let left = 0; left < keys.length; left += batchSize) {
+        batchStarts.push(left);
     }
-    for (let left of sliceStarts) {
-        const currSlice = keys.slice(left, left + sliceLength);
-        const currDiffs = yield Promise.all(currSlice.map((key) => __awaiter(void 0, void 0, void 0, function* () {
+    for (let left of batchStarts) {
+        const currBatch = keys.slice(left, left + batchSize);
+        const currDiffs = yield Promise.all(currBatch.map((key) => __awaiter(void 0, void 0, void 0, function* () {
             const diff = yield run(Number(key));
-            console.log(key, diff);
+            if (diff > 10) {
+                console.log(`Difference for game ${key} is ${diff}`);
+                outlierGames.push({ id: key, diff });
+            }
             return diff;
         })));
+        console.log(`Diffs for batch ${left}-${left + batchSize} are ${currDiffs}`);
         diffs.push(...currDiffs);
     }
-    console.log(diffs);
+    const diffsSummary = summary_1.default(diffs);
+    console.log("\n\n");
+    console.log(diffsSummary);
+    saveOutliers(outlierGames);
+    const json = JSON.stringify({ diffs });
+    fs_1.default.writeFile("firstAnalysis.json", json, () => { });
 });
 main();

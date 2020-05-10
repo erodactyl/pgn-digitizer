@@ -11,7 +11,9 @@ const splitMoves = (pgn) => {
     const masked = mask(pgn);
     const movesString = masked.replace(/\d+\.(\.\.)?/g, ":");
     const dirtyMoves = trim(movesString).split(new RegExp(":"));
-    const moves = dirtyMoves.slice(1).map((move) => move.trim());
+    const moves = dirtyMoves
+        .slice(1)
+        .map((move) => move.trim().replace(/\s\s+/g, " "));
     return moves;
 };
 exports.default = splitMoves;
