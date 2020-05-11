@@ -3,6 +3,7 @@ import realGames from "./akopianGames.json";
 import scannedGames from "./scans.json";
 import splitMoves from "./splitMoves";
 import getEdits from "./getEdits";
+import generateModel from "./generateModel";
 
 class EditMemory {
   values: Record<string, number>;
@@ -102,10 +103,9 @@ const main = (keys: string[]) => {
 };
 
 const keys = Object.keys(realGames);
-const model = main(keys);
-console.log(model);
+const coefficients = main(keys);
 
-// 83
+const model = generateModel(coefficients);
 
 const json = JSON.stringify(model);
-fs.writeFile("coefficients.json", json, () => {});
+fs.writeFile("model.json", json, () => {});
