@@ -12,7 +12,7 @@ const main = async () => {
   const batchSize = 20;
   const batchStarts: number[] = [];
 
-  const outlierGames: { id: string; diff: number }[] = [];
+  // const outlierGames: { id: string; diff: number }[] = [];
 
   for (let left = 0; left < keys.length; left += batchSize) {
     batchStarts.push(left);
@@ -26,7 +26,7 @@ const main = async () => {
         const diff = await getScannedGame(key);
         if (diff > 10) {
           console.log(`Difference for game ${key} is ${diff}`);
-          outlierGames.push({ id: key, diff });
+          // outlierGames.push({ id: key, diff });
         }
         return diff;
       })
@@ -40,10 +40,10 @@ const main = async () => {
   console.log("\n\n");
   console.log(diffsSummary);
 
-  saveOutliers(outlierGames);
+  // saveOutliers(outlierGames);
 
-  const json = JSON.stringify({ diffs });
-  fs.writeFile("thirdAnalysis.json", json, () => {});
+  // const json = JSON.stringify({ diffs });
+  // fs.writeFile("thirdAnalysis.json", json, () => {});
 };
 
 main();

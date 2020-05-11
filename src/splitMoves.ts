@@ -5,13 +5,15 @@ function trim(str) {
 function preprocessMove(str: string) {
   return (
     str
-      .trim()
       // 0 is an illegal character in SAN, best estimate is the O from O-O of O-O-O
       .replace(/0/g, "O")
       // . is an illegal character, replace it
       .replace(/\./g, " ")
+      // Can't have 9, statistically best guess is a g
+      .replace(/9/g, "g")
       // trim double spaces
       .replace(/\s\s+/g, " ")
+      .trim()
   );
 }
 
@@ -23,26 +25,28 @@ const splitMoves = (pgn: string): string[] => {
   /* Delete move numbers */
   const movesString = pgn.replace(/\s\d+\.(\.\.)?/g, ":");
 
-  /* Trim and get array of moves */
-  const dirtyMoves = trim(movesString).split(new RegExp(":"));
+  /* Trim and get array of moves, remove first empty string element */
+  const dirtyMoves = trim(movesString).split(new RegExp(":")).slice(1);
 
-  const correctedMoves = [];
-  // Start from 1, as first dirty move is an empty string
+  const correctedMoves = dirtyMoves.map((dm) => preprocessMove(dm));
 
-  for (let i = 1; i < dirtyMoves.length; i++) {
-    const trimmed = preprocessMove(dirtyMoves[i]);
-    // chess moves can't be of length less than 2, combine with next
-    if (trimmed.length < 2 && dirtyMoves[i + 1]) {
-      const nextTrimmed = preprocessMove(dirtyMoves[i + 1]);
-      correctedMoves.push(trimmed + nextTrimmed);
-      i++;
+  const moves = [];
+  correctedMoves.forEach((m, idx) => {
+    if (!m.includes(" ")) {
+      if (idx === correctedMoves.length - 1) {
+        // Last move
+        moves.push(m);
+      } else {
+        console.log(`ERROR SPACE in ${m}`);
+      }
     } else {
-      correctedMoves.push(trimmed);
+      const [move1, move2] = m.split(" ");
+      moves.push(move1, move2);
     }
-  }
+  });
 
   /* Remove result */
-  return correctedMoves;
+  return moves;
 };
 
 export default splitMoves;

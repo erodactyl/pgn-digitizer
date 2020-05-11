@@ -5,26 +5,31 @@ function trim(str) {
 }
 function preprocessMove(str) {
     return (str
-        .trim()
         .replace(/0/g, "O")
         .replace(/\./g, " ")
-        .replace(/\s\s+/g, " "));
+        .replace(/9/g, "g")
+        .replace(/\s\s+/g, " ")
+        .trim());
 }
 const splitMoves = (pgn) => {
     const movesString = pgn.replace(/\s\d+\.(\.\.)?/g, ":");
-    const dirtyMoves = trim(movesString).split(new RegExp(":"));
-    const correctedMoves = [];
-    for (let i = 1; i < dirtyMoves.length; i++) {
-        const trimmed = preprocessMove(dirtyMoves[i]);
-        if (trimmed.length < 2 && dirtyMoves[i + 1]) {
-            const nextTrimmed = preprocessMove(dirtyMoves[i + 1]);
-            correctedMoves.push(trimmed + nextTrimmed);
-            i++;
+    const dirtyMoves = trim(movesString).split(new RegExp(":")).slice(1);
+    const correctedMoves = dirtyMoves.map((dm) => preprocessMove(dm));
+    const moves = [];
+    correctedMoves.forEach((m, idx) => {
+        if (!m.includes(" ")) {
+            if (idx === correctedMoves.length - 1) {
+                moves.push(m);
+            }
+            else {
+                console.log(`ERROR SPACE in ${m}`);
+            }
         }
         else {
-            correctedMoves.push(trimmed);
+            const [move1, move2] = m.split(" ");
+            moves.push(move1, move2);
         }
-    }
-    return correctedMoves;
+    });
+    return moves;
 };
 exports.default = splitMoves;

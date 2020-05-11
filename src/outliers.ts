@@ -14,9 +14,9 @@ const getOutliers = async (ids: string[], debug?: boolean) => {
   console.log(summary(diffs));
 };
 
-getOutliers(
-  outliersObj.outliers.map((o) => o.id),
-  true
-);
+// getOutliers(
+//   outliersObj.outliers.map((o) => o.id),
+//   true
+// );
 
-// getOutliers(["34"], true);
+getOutliers(["1234"], true);
