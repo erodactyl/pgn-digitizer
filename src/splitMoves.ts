@@ -6,11 +6,11 @@ function preprocessMove(str: string) {
   return (
     str
       // 0 is an illegal character in SAN, best estimate is the O from O-O of O-O-O
-      .replace(/0/g, "O")
+      // .replace(/0/g, "O")
       // . is an illegal character, replace it
       .replace(/\./g, " ")
       // Can't have 9, statistically best guess is a g
-      .replace(/9/g, "g")
+      // .replace(/9/g, "g")
       // trim double spaces
       .replace(/\s\s+/g, " ")
       .trim()
@@ -37,8 +37,8 @@ const splitMoves = (pgn: string): string[] => {
         // Last move
         moves.push(m);
       } else {
-        console.log(`\nERROR SPACE in ${m}`);
-        console.count("error space");
+        // console.log(`\nERROR SPACE in ${m}`);
+        // console.count("error space");
       }
     } else {
       const [move1, move2] = m.split(" ");

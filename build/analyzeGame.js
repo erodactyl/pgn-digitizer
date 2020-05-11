@@ -31,6 +31,7 @@ class EditMemory {
     }
 }
 const main = (keys) => {
+    let total = new EditMemory();
     let correct = new EditMemory();
     let lost = new EditMemory();
     let added = new EditMemory();
@@ -78,6 +79,7 @@ const main = (keys) => {
                 }, scannedMove);
                 correct.addValues(correctLeft);
             }
+            total.addValues(realMove);
         }
     });
     return {
@@ -85,6 +87,7 @@ const main = (keys) => {
         lost: lost.elements,
         added: added.elements,
         changed: changed.elements,
+        total: total.elements,
     };
 };
 const keys = Object.keys(akopianGames_json_1.default);

@@ -31,6 +31,7 @@ class EditMemory {
 }
 
 const main = (keys: string[]) => {
+  let total = new EditMemory();
   let correct = new EditMemory();
   let lost = new EditMemory();
   let added = new EditMemory();
@@ -45,6 +46,7 @@ const main = (keys: string[]) => {
     for (let i = 0; i < realMoves.length; i++) {
       const realMove = realMoves[i];
       const scannedMove = scannedMoves[i];
+
       if (realMove === scannedMove) {
         correct.addValues(realMove);
       } else if (scannedMove) {
@@ -86,6 +88,7 @@ const main = (keys: string[]) => {
         // console.log(correctLeft);
         correct.addValues(correctLeft);
       }
+      total.addValues(realMove);
     }
   });
 
@@ -94,6 +97,7 @@ const main = (keys: string[]) => {
     lost: lost.elements,
     added: added.elements,
     changed: changed.elements,
+    total: total.elements,
   };
 };
 

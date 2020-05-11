@@ -5,9 +5,7 @@ function trim(str) {
 }
 function preprocessMove(str) {
     return (str
-        .replace(/0/g, "O")
         .replace(/\./g, " ")
-        .replace(/9/g, "g")
         .replace(/\s\s+/g, " ")
         .trim());
 }
@@ -22,8 +20,6 @@ const splitMoves = (pgn) => {
                 moves.push(m);
             }
             else {
-                console.log(`\nERROR SPACE in ${m}`);
-                console.count("error space");
             }
         }
         else {
