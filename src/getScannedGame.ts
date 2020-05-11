@@ -16,13 +16,14 @@ const getScannedGame = async (id: string, debug?: boolean): Promise<number> => {
     const realMoves = splitMoves(getGameById(id));
 
     if (debug) {
-      console.log(scannedPgn, "\n");
+      console.log("Scanned: ", scannedPgn, "\n");
+      console.log("Real: ", getGameById(id), "\n");
       for (let i = 0; i < Math.max(moves.length, realMoves.length); i++) {
-        console.log(`${i} scanned is ${moves[i]}, real is ${realMoves[i]}`);
+        // console.log(`${i} scanned is ${moves[i]}, real is ${realMoves[i]}`);
       }
     }
 
-    const pgn = traverseGame(moves);
+    // const pgn = traverseGame(moves);
 
     // console.log(pgn);
 

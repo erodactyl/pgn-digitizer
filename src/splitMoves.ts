@@ -21,7 +21,7 @@ function preprocessMove(str: string) {
  */
 const splitMoves = (pgn: string): string[] => {
   /* Delete move numbers */
-  const movesString = pgn.replace(/\d+\.(\.\.)?/g, ":");
+  const movesString = pgn.replace(/\s\d+\.(\.\.)?/g, ":");
 
   /* Trim and get array of moves */
   const dirtyMoves = trim(movesString).split(new RegExp(":"));

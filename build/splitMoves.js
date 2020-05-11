@@ -11,7 +11,7 @@ function preprocessMove(str) {
         .replace(/\s\s+/g, " "));
 }
 const splitMoves = (pgn) => {
-    const movesString = pgn.replace(/\d+\.(\.\.)?/g, ":");
+    const movesString = pgn.replace(/\s\d+\.(\.\.)?/g, ":");
     const dirtyMoves = trim(movesString).split(new RegExp(":"));
     const correctedMoves = [];
     for (let i = 1; i < dirtyMoves.length; i++) {
