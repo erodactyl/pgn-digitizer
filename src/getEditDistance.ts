@@ -1,13 +1,23 @@
-const getDeletionCost = () => {
-  return 1;
+import model from "./model.json";
+
+const getIdentityCost = (char: string) => {
+  const prob = model.correct[char] || 0;
+  return 1 - prob;
 };
 
-const getInsertionCost = () => {
-  return 1;
+const getDeletionCost = (char: string) => {
+  const prob = model.added[char] || 0;
+  return 1 - prob;
 };
 
-const getSubstitutionCost = () => {
-  return 1;
+const getInsertionCost = (char: string) => {
+  const prob = model.lost[char] || 0;
+  return 1 - prob;
+};
+
+const getSubstitutionCost = (from: string, to: string) => {
+  const prob = model.changed[`${to}${from}`] || 0;
+  return 1 - prob;
 };
 
 /**
@@ -29,11 +39,14 @@ export const getEditDistance = (source: string, target: string) => {
 
   for (let j = 1; j <= target.length; j++) {
     for (let i = 1; i <= source.length; i++) {
-      const substitutionCost = source[i - 1] === target[j - 1] ? 0 : 1;
+      const substitutionCost =
+        source[i - 1] === target[j - 1]
+          ? getIdentityCost(source[i - 1])
+          : getSubstitutionCost(source[i - 1], target[j - 1]);
 
       distances[i][j] = Math.min(
-        distances[i - 1][j] + 1, // deletion
-        distances[i][j - 1] + 1, // insertion
+        distances[i - 1][j] + getDeletionCost(source[i - 1]), // deletion
+        distances[i][j - 1] + getInsertionCost(target[j - 1]), // insertion
         distances[i - 1][j - 1] + substitutionCost // substitution
       );
     }
@@ -41,12 +54,6 @@ export const getEditDistance = (source: string, target: string) => {
 
   return distances[source.length][target.length];
 };
-
-// console.time("10000 ed");
-// for (let i = 0; i <= 10000; i++) {
-//   getEditDistance("kitten", "sitting");
-// }
-// console.timeEnd("10000 ed");
 
 export const getClosestTarget = (source: string, targets: string[]) => {
   let min = { target: "", dist: 100 }; // Unreasonably large distance

@@ -1,13 +1,24 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const getDeletionCost = () => {
-    return 1;
+const model_json_1 = __importDefault(require("./model.json"));
+const getIdentityCost = (char) => {
+    const prob = model_json_1.default.correct[char] || 0;
+    return 1 - prob;
 };
-const getInsertionCost = () => {
-    return 1;
+const getDeletionCost = (char) => {
+    const prob = model_json_1.default.added[char] || 0;
+    return 1 - prob;
 };
-const getSubstitutionCost = () => {
-    return 1;
+const getInsertionCost = (char) => {
+    const prob = model_json_1.default.lost[char] || 0;
+    return 1 - prob;
+};
+const getSubstitutionCost = (from, to) => {
+    const prob = model_json_1.default.changed[`${to}${from}`] || 0;
+    return 1 - prob;
 };
 exports.getEditDistance = (source, target) => {
     const distances = Array(source.length + 1)
@@ -21,8 +32,10 @@ exports.getEditDistance = (source, target) => {
     }
     for (let j = 1; j <= target.length; j++) {
         for (let i = 1; i <= source.length; i++) {
-            const substitutionCost = source[i - 1] === target[j - 1] ? 0 : 1;
-            distances[i][j] = Math.min(distances[i - 1][j] + 1, distances[i][j - 1] + 1, distances[i - 1][j - 1] + substitutionCost);
+            const substitutionCost = source[i - 1] === target[j - 1]
+                ? getIdentityCost(source[i - 1])
+                : getSubstitutionCost(source[i - 1], target[j - 1]);
+            distances[i][j] = Math.min(distances[i - 1][j] + getDeletionCost(source[i - 1]), distances[i][j - 1] + getInsertionCost(target[j - 1]), distances[i - 1][j - 1] + substitutionCost);
         }
     }
     return distances[source.length][target.length];
