@@ -22,7 +22,8 @@ const splitMoves = (pgn) => {
                 moves.push(m);
             }
             else {
-                console.log(`ERROR SPACE in ${m}`);
+                console.log(`\nERROR SPACE in ${m}`);
+                console.count("error space");
             }
         }
         else {

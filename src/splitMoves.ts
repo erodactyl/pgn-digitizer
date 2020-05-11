@@ -37,7 +37,8 @@ const splitMoves = (pgn: string): string[] => {
         // Last move
         moves.push(m);
       } else {
-        console.log(`ERROR SPACE in ${m}`);
+        console.log(`\nERROR SPACE in ${m}`);
+        console.count("error space");
       }
     } else {
       const [move1, move2] = m.split(" ");
