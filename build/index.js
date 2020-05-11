@@ -44,9 +44,6 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     console.log(diffsSummary);
     saveOutliers_1.default(outlierGames);
     const json = JSON.stringify({ diffs });
-    fs_1.default.writeFile("secondAnalysis.json", json, () => { });
+    fs_1.default.writeFile("thirdAnalysis.json", json, () => { });
 });
-const run = () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(yield getScannedGame_1.default("2"));
-});
-run();
+main();

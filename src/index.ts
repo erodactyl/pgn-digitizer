@@ -43,13 +43,13 @@ const main = async () => {
   saveOutliers(outlierGames);
 
   const json = JSON.stringify({ diffs });
-  fs.writeFile("secondAnalysis.json", json, () => {});
+  fs.writeFile("thirdAnalysis.json", json, () => {});
 };
 
-// main();
+main();
 
-const run = async () => {
-  console.log(await getScannedGame("2"));
-};
+// const run = async () => {
+//   console.log(await getScannedGame("2"));
+// };
 
-run();
+// run();
