@@ -27,7 +27,7 @@ const main = (keys: string[]) => {
 
       const traversed = traverseGame(
         scannedMoves,
-        getEditDistance.getClosestTarget
+        getEditDistance.getClosestTargetsByThreshold
       );
 
       for (let i = 0; i < realMoves.length; i++) {

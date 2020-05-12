@@ -1,29 +1,46 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chess_js_1 = require("chess.js");
-const move = (game, moveStr, getClosestTarget) => {
-    let dist = 0;
-    const moved = game.move(moveStr);
-    if (moved === null) {
-        const legalMoves = game.moves();
-        const closestMove = getClosestTarget(moveStr, legalMoves);
-        game.move(closestMove.target);
-        dist = closestMove.dist;
+const clone = (orig) => Object.assign(Object.create(Object.getPrototypeOf(orig)), orig);
+const THRESHOLD = 0.01;
+const getPossibleGames = (gameWithDistance, moveStr, getClosestTargets) => {
+    const legalMoves = gameWithDistance.game.moves();
+    if (legalMoves.includes(moveStr)) {
+        const newGame = clone(gameWithDistance.game);
+        newGame.move(moveStr);
+        const fullGame = {
+            game: newGame,
+            distance: gameWithDistance.distance,
+        };
+        return [fullGame];
     }
-    return dist;
+    else {
+        const closest = getClosestTargets(moveStr, legalMoves, THRESHOLD);
+        return closest.map((m) => {
+            const newGame = clone(gameWithDistance.game);
+            newGame.move(m.target);
+            const fullGame = {
+                game: newGame,
+                distance: gameWithDistance.distance + m.dist,
+            };
+            return fullGame;
+        });
+    }
 };
-const traverseGame = (moves, getClosestTarget) => {
-    let totalDist = 0;
-    const game = new chess_js_1.Chess();
+const traverseGame = (moves, getClosestTargets) => {
+    let games = [{ game: new chess_js_1.Chess(), distance: 0 }];
     for (const currMove of moves) {
-        totalDist += move(game, currMove, getClosestTarget);
-        if (totalDist > 10) {
-            break;
+        const newPossibleGames = [];
+        games.forEach((game) => {
+            const possibleGames = getPossibleGames(game, currMove, getClosestTargets);
+            newPossibleGames.push(...possibleGames);
+        });
+        const closestDist = newPossibleGames.reduce((acc, g) => (g.distance < acc ? g.distance : acc), 100000);
+        if (closestDist > 10) {
+            return moves;
         }
+        games = newPossibleGames.filter((g) => g.distance < closestDist + THRESHOLD);
     }
-    if (totalDist > 10) {
-        return moves;
-    }
-    return game.history();
+    return games[0].game.history();
 };
 exports.default = traverseGame;

@@ -21,7 +21,7 @@ const main = (keys) => {
             const scannedGame = testScans_json_1.default[key];
             const realMoves = splitMoves_1.default(realGame);
             const scannedMoves = splitMoves_1.default(scannedGame);
-            const traversed = traverseGame_1.default(scannedMoves, getEditDistance.getClosestTarget);
+            const traversed = traverseGame_1.default(scannedMoves, getEditDistance.getClosestTargetsByThreshold);
             for (let i = 0; i < realMoves.length; i++) {
                 const realMove = realMoves[i];
                 const traversedMove = traversed[i];

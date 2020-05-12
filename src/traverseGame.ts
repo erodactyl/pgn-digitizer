@@ -1,47 +1,80 @@
 import { Chess, ChessInstance } from "chess.js";
 
-type GetClosestTarget = (
+const clone = <T>(orig: T): T =>
+  Object.assign(Object.create(Object.getPrototypeOf(orig)), orig);
+
+const THRESHOLD = 0.01;
+
+type GetClosestTargets = (
   source: string,
-  targets: string[]
+  targets: string[],
+  threshold: number
 ) => {
   target: string;
   dist: number;
-};
+}[];
 
-const move = (
-  game: ChessInstance,
+interface GameWithDistance {
+  game: ChessInstance;
+  distance: number;
+}
+
+const getPossibleGames = (
+  gameWithDistance: GameWithDistance,
   moveStr: string,
-  getClosestTarget: GetClosestTarget
-) => {
-  let dist = 0;
-  const moved = game.move(moveStr);
-  if (moved === null) {
-    // console.log("here");
-    const legalMoves = game.moves();
-    const closestMove = getClosestTarget(moveStr, legalMoves);
-    game.move(closestMove.target);
-    dist = closestMove.dist;
+  getClosestTargets: GetClosestTargets
+): GameWithDistance[] => {
+  const legalMoves = gameWithDistance.game.moves();
+  if (legalMoves.includes(moveStr)) {
+    const newGame = clone(gameWithDistance.game);
+    newGame.move(moveStr);
+    const fullGame: GameWithDistance = {
+      game: newGame,
+      distance: gameWithDistance.distance,
+    };
+    return [fullGame];
+  } else {
+    const closest = getClosestTargets(moveStr, legalMoves, THRESHOLD);
+    return closest.map((m) => {
+      const newGame = clone(gameWithDistance.game);
+      newGame.move(m.target);
+      const fullGame = {
+        game: newGame,
+        distance: gameWithDistance.distance + m.dist,
+      };
+      return fullGame;
+    });
   }
-
-  return dist;
 };
 
-const traverseGame = (moves: string[], getClosestTarget: GetClosestTarget) => {
-  let totalDist = 0;
-  const game = new Chess();
+const traverseGame = (
+  moves: string[],
+  getClosestTargets: GetClosestTargets
+) => {
+  let games: GameWithDistance[] = [{ game: new Chess(), distance: 0 }];
 
   for (const currMove of moves) {
-    totalDist += move(game, currMove, getClosestTarget);
-    if (totalDist > 10) {
-      break;
+    const newPossibleGames: GameWithDistance[] = [];
+    games.forEach((game) => {
+      const possibleGames = getPossibleGames(game, currMove, getClosestTargets);
+      newPossibleGames.push(...possibleGames);
+    });
+
+    const closestDist = newPossibleGames.reduce(
+      (acc, g) => (g.distance < acc ? g.distance : acc),
+      100000
+    );
+
+    if (closestDist > 10) {
+      return moves;
     }
+
+    games = newPossibleGames.filter(
+      (g) => g.distance < closestDist + THRESHOLD
+    );
   }
 
-  if (totalDist > 10) {
-    return moves;
-  }
-
-  return game.history();
+  return games[0].game.history();
 };
 
 export default traverseGame;
