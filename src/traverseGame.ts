@@ -1,7 +1,11 @@
 import { Chess, ChessInstance } from "chess.js";
 
-const clone = <T>(orig: T): T =>
-  Object.assign(Object.create(Object.getPrototypeOf(orig)), orig);
+/** Expensive cloning function, call at your own risk */
+const clone = (orig: ChessInstance): ChessInstance => {
+  const clonedGame = new Chess();
+  clonedGame.load_pgn(orig.pgn());
+  return clonedGame;
+};
 
 const THRESHOLD = 0.01;
 
@@ -26,13 +30,8 @@ const getPossibleGames = (
 ): GameWithDistance[] => {
   const legalMoves = gameWithDistance.game.moves();
   if (legalMoves.includes(moveStr)) {
-    const newGame = clone(gameWithDistance.game);
-    newGame.move(moveStr);
-    const fullGame: GameWithDistance = {
-      game: newGame,
-      distance: gameWithDistance.distance,
-    };
-    return [fullGame];
+    gameWithDistance.game.move(moveStr);
+    return [gameWithDistance];
   } else {
     const closest = getClosestTargets(moveStr, legalMoves, THRESHOLD);
     return closest.map((m) => {
@@ -45,6 +44,14 @@ const getPossibleGames = (
       return fullGame;
     });
   }
+};
+
+const getClosestGame = (games: GameWithDistance[]): GameWithDistance => {
+  if (games.length === 0) throw new Error("Empty");
+  return games.reduce(
+    (acc, g) => (g.distance < acc.distance ? g : acc),
+    games[0]
+  );
 };
 
 const traverseGame = (
@@ -60,21 +67,20 @@ const traverseGame = (
       newPossibleGames.push(...possibleGames);
     });
 
-    const closestDist = newPossibleGames.reduce(
-      (acc, g) => (g.distance < acc ? g.distance : acc),
-      100000
-    );
+    const closestGame = getClosestGame(newPossibleGames);
 
-    if (closestDist > 10) {
+    if (closestGame.distance > 10) {
       return moves;
     }
 
     games = newPossibleGames.filter(
-      (g) => g.distance < closestDist + THRESHOLD
+      (g) => g.distance < closestGame.distance + THRESHOLD
     );
   }
 
-  return games[0].game.history();
+  const closestGame = getClosestGame(games).game;
+
+  return closestGame.history();
 };
 
 export default traverseGame;

@@ -1,18 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chess_js_1 = require("chess.js");
-const clone = (orig) => Object.assign(Object.create(Object.getPrototypeOf(orig)), orig);
+const clone = (orig) => {
+    const clonedGame = new chess_js_1.Chess();
+    clonedGame.load_pgn(orig.pgn());
+    return clonedGame;
+};
 const THRESHOLD = 0.01;
 const getPossibleGames = (gameWithDistance, moveStr, getClosestTargets) => {
     const legalMoves = gameWithDistance.game.moves();
     if (legalMoves.includes(moveStr)) {
-        const newGame = clone(gameWithDistance.game);
-        newGame.move(moveStr);
-        const fullGame = {
-            game: newGame,
-            distance: gameWithDistance.distance,
-        };
-        return [fullGame];
+        gameWithDistance.game.move(moveStr);
+        return [gameWithDistance];
     }
     else {
         const closest = getClosestTargets(moveStr, legalMoves, THRESHOLD);
@@ -27,6 +26,11 @@ const getPossibleGames = (gameWithDistance, moveStr, getClosestTargets) => {
         });
     }
 };
+const getClosestGame = (games) => {
+    if (games.length === 0)
+        throw new Error("Empty");
+    return games.reduce((acc, g) => (g.distance < acc.distance ? g : acc), games[0]);
+};
 const traverseGame = (moves, getClosestTargets) => {
     let games = [{ game: new chess_js_1.Chess(), distance: 0 }];
     for (const currMove of moves) {
@@ -35,12 +39,13 @@ const traverseGame = (moves, getClosestTargets) => {
             const possibleGames = getPossibleGames(game, currMove, getClosestTargets);
             newPossibleGames.push(...possibleGames);
         });
-        const closestDist = newPossibleGames.reduce((acc, g) => (g.distance < acc ? g.distance : acc), 100000);
-        if (closestDist > 10) {
+        const closestGame = getClosestGame(newPossibleGames);
+        if (closestGame.distance > 10) {
             return moves;
         }
-        games = newPossibleGames.filter((g) => g.distance < closestDist + THRESHOLD);
+        games = newPossibleGames.filter((g) => g.distance < closestGame.distance + THRESHOLD);
     }
-    return games[0].game.history();
+    const closestGame = getClosestGame(games).game;
+    return closestGame.history();
 };
 exports.default = traverseGame;

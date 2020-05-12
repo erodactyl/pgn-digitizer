@@ -89,7 +89,7 @@ function createEditDistancesFromModel(model) {
     });
     targetDistances.sort((a, b) => a.dist - b.dist);
     const closest = targetDistances[0].dist;
-    return targetDistances.filter((t) => t.dist - closest < threshold);
+    return targetDistances.filter((t) => t.dist - closest <= threshold);
   };
 
   return {
