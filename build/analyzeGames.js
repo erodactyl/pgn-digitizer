@@ -38,49 +38,54 @@ const main = (keys) => {
     let added = new EditMemory();
     let changed = new EditMemory();
     keys.forEach((key) => {
-        const realGame = akopianGames_json_1.default[key];
-        const scannedGame = scans_json_1.default[key];
-        const realMoves = splitMoves_1.default(realGame);
-        const scannedMoves = splitMoves_1.default(scannedGame);
-        for (let i = 0; i < realMoves.length; i++) {
-            const realMove = realMoves[i];
-            const scannedMove = scannedMoves[i];
-            if (realMove === scannedMove) {
-                correct.addValues(realMove);
-            }
-            else if (scannedMove) {
-                const edits = getEdits_1.default(scannedMove, realMove);
-                if (edits.length > 2) {
-                    break;
+        try {
+            const realGame = akopianGames_json_1.default[key];
+            const scannedGame = scans_json_1.default[key];
+            const realMoves = splitMoves_1.default(realGame);
+            const scannedMoves = splitMoves_1.default(scannedGame);
+            for (let i = 0; i < realMoves.length; i++) {
+                const realMove = realMoves[i];
+                const scannedMove = scannedMoves[i];
+                if (realMove === scannedMove) {
+                    correct.addValues(realMove);
                 }
-                if (edits.length === 2) {
+                else if (scannedMove) {
+                    const edits = getEdits_1.default(scannedMove, realMove);
+                    if (edits.length > 2) {
+                        break;
+                    }
+                    if (edits.length === 2) {
+                    }
+                    edits.forEach((edit) => {
+                        switch (edit.type) {
+                            case "Insert":
+                                lost.addValue(edit.insert);
+                                break;
+                            case "Remove":
+                                added.addValue(edit.remove);
+                                break;
+                            case "Substitute":
+                                changed.addValue(`${edit.to}${edit.from}`);
+                                break;
+                        }
+                    });
+                    const correctLeft = edits.reduce((acc, edit) => {
+                        switch (edit.type) {
+                            case "Insert":
+                                return acc;
+                            case "Remove":
+                                return acc.replace(edit.remove, "");
+                            case "Substitute":
+                                return acc.replace(edit.from, "");
+                        }
+                    }, scannedMove);
+                    correct.addValues(correctLeft);
                 }
-                edits.forEach((edit) => {
-                    switch (edit.type) {
-                        case "Insert":
-                            lost.addValue(edit.insert);
-                            break;
-                        case "Remove":
-                            added.addValue(edit.remove);
-                            break;
-                        case "Substitute":
-                            changed.addValue(`${edit.to}${edit.from}`);
-                            break;
-                    }
-                });
-                const correctLeft = edits.reduce((acc, edit) => {
-                    switch (edit.type) {
-                        case "Insert":
-                            return acc;
-                        case "Remove":
-                            return acc.replace(edit.remove, "");
-                        case "Substitute":
-                            return acc.replace(edit.from, "");
-                    }
-                }, scannedMove);
-                correct.addValues(correctLeft);
+                total.addValues(realMove);
             }
-            total.addValues(realMove);
+        }
+        catch (e) {
+            console.log(`Game ${key} failed to split`);
         }
     });
     return {

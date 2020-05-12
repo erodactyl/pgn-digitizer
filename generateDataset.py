@@ -7,7 +7,7 @@ import json
 import textwrap
 
 script_dir = os.path.dirname(__file__)
-rel_path = "pgns/Akobian.pgn"
+rel_path = "pgns/Alburt.pgn"
 abs_path = os.path.join(script_dir, rel_path)
 
 pgns = open(abs_path)
@@ -46,14 +46,14 @@ def createGameImages():
 
             current_game = chess.pgn.read_game(pgns)
             pgn = str(current_game.mainline_moves())
-            MakeImg(pgn, 'images/' + idStr + '.png')
+            MakeImg(pgn, 'testImages/' + idStr + '.png')
             data[idStr] = pgn
             id += 1
             print('Making image with id ' + idStr)
         except:
             break
 
-    with open('data.json', 'w') as outfile:
+    with open('testData.json', 'w') as outfile:
         json.dump(data, outfile)
 
 

@@ -5,11 +5,13 @@ import getGameById from "./getGameById";
 import traverseGame from "./traverseGame";
 import moveDifferences from "./moveDifferences";
 
-const getScannedGame = async (id: string, debug?: boolean): Promise<number> => {
+const getScannedGame = async (id: string, debug?: boolean): Promise<string> => {
   try {
     const scannedPgn = await scanImage(
-      path.join(__dirname, "..", "images", `${id}.png`)
+      path.join(__dirname, "..", "testImages", `${id}.png`)
     );
+
+    return scannedPgn;
 
     const moves = splitMoves(scannedPgn);
 

@@ -39,57 +39,61 @@ const main = (keys: string[]) => {
   let changed = new EditMemory();
 
   keys.forEach((key) => {
-    const realGame = realGames[key];
-    const scannedGame = scannedGames[key];
-    const realMoves = splitMoves(realGame);
-    const scannedMoves = splitMoves(scannedGame);
+    try {
+      const realGame = realGames[key];
+      const scannedGame = scannedGames[key];
+      const realMoves = splitMoves(realGame);
+      const scannedMoves = splitMoves(scannedGame);
 
-    for (let i = 0; i < realMoves.length; i++) {
-      const realMove = realMoves[i];
-      const scannedMove = scannedMoves[i];
+      for (let i = 0; i < realMoves.length; i++) {
+        const realMove = realMoves[i];
+        const scannedMove = scannedMoves[i];
 
-      if (realMove === scannedMove) {
-        correct.addValues(realMove);
-      } else if (scannedMove) {
-        const edits = getEdits(scannedMove, realMove);
-        if (edits.length > 2) {
-          // console.count("more than 2 errors");
-          // console.log(`Game ${key}: ${realMove} -- ${scannedMove}\n`);
-          // console.log(edits);
-          break;
-        }
-        if (edits.length === 2) {
-          // console.log(`Game ${key}: ${realMove} -- ${scannedMove}\n`);
-          // console.count("2 errors");
-        }
-        edits.forEach((edit) => {
-          switch (edit.type) {
-            case "Insert":
-              lost.addValue(edit.insert);
-              break;
-            case "Remove":
-              added.addValue(edit.remove);
-              break;
-            case "Substitute":
-              changed.addValue(`${edit.to}${edit.from}`);
-              break;
+        if (realMove === scannedMove) {
+          correct.addValues(realMove);
+        } else if (scannedMove) {
+          const edits = getEdits(scannedMove, realMove);
+          if (edits.length > 2) {
+            // console.count("more than 2 errors");
+            // console.log(`Game ${key}: ${realMove} -- ${scannedMove}\n`);
+            // console.log(edits);
+            break;
           }
-        });
-
-        const correctLeft = edits.reduce((acc, edit) => {
-          switch (edit.type) {
-            case "Insert":
-              return acc;
-            case "Remove":
-              return acc.replace(edit.remove, "");
-            case "Substitute":
-              return acc.replace(edit.from, "");
+          if (edits.length === 2) {
+            // console.log(`Game ${key}: ${realMove} -- ${scannedMove}\n`);
+            // console.count("2 errors");
           }
-        }, scannedMove);
-        // console.log(correctLeft);
-        correct.addValues(correctLeft);
+          edits.forEach((edit) => {
+            switch (edit.type) {
+              case "Insert":
+                lost.addValue(edit.insert);
+                break;
+              case "Remove":
+                added.addValue(edit.remove);
+                break;
+              case "Substitute":
+                changed.addValue(`${edit.to}${edit.from}`);
+                break;
+            }
+          });
+
+          const correctLeft = edits.reduce((acc, edit) => {
+            switch (edit.type) {
+              case "Insert":
+                return acc;
+              case "Remove":
+                return acc.replace(edit.remove, "");
+              case "Substitute":
+                return acc.replace(edit.from, "");
+            }
+          }, scannedMove);
+          // console.log(correctLeft);
+          correct.addValues(correctLeft);
+        }
+        total.addValues(realMove);
       }
-      total.addValues(realMove);
+    } catch (e) {
+      console.log(`Game ${key} failed to split`);
     }
   });
 

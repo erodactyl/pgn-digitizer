@@ -19,7 +19,8 @@ const getGameById_1 = __importDefault(require("./getGameById"));
 const moveDifferences_1 = __importDefault(require("./moveDifferences"));
 const getScannedGame = (id, debug) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const scannedPgn = yield scanImage_1.default(path_1.default.join(__dirname, "..", "images", `${id}.png`));
+        const scannedPgn = yield scanImage_1.default(path_1.default.join(__dirname, "..", "testImages", `${id}.png`));
+        return scannedPgn;
         const moves = splitMoves_1.default(scannedPgn);
         const realMoves = splitMoves_1.default(getGameById_1.default(id));
         if (debug) {
