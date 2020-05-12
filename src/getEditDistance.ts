@@ -54,6 +54,16 @@ function createEditDistancesFromModel(model) {
     return distances[source.length][target.length];
   };
 
+  /** Get all targets sorted by distances */
+  const getClosestTargets = (source: string, targets: string[]) => {
+    const targetDistances = targets.map((target) => {
+      const dist = getEditDistance(source, target);
+      return { target, dist };
+    });
+    targetDistances.sort((a, b) => a.dist - b.dist);
+    return targetDistances;
+  };
+
   const getClosestTarget = (source: string, targets: string[]) => {
     let min = { target: "", dist: 100 }; // Unreasonably large distance
 
@@ -67,7 +77,28 @@ function createEditDistancesFromModel(model) {
     return min;
   };
 
-  return { getEditDistance, getClosestTarget };
+  const getClosestTargetsByThreshold = (
+    source: string,
+    targets: string[],
+    threshold: number
+  ) => {
+    if (targets.length === 0) return [];
+    const targetDistances = targets.map((target) => {
+      const dist = getEditDistance(source, target);
+      return { target, dist };
+    });
+    targetDistances.sort((a, b) => a.dist - b.dist);
+    console.log(targetDistances);
+    const closest = targetDistances[0].dist;
+    return targetDistances.filter((t) => t.dist - closest < threshold);
+  };
+
+  return {
+    getEditDistance,
+    getClosestTarget,
+    getClosestTargets,
+    getClosestTargetsByThreshold,
+  };
 }
 
 export default createEditDistancesFromModel;
