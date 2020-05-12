@@ -40,7 +40,7 @@ const traverseGame = (moves, getClosestTargets) => {
             newPossibleGames.push(...possibleGames);
         });
         const closestGame = getClosestGame(newPossibleGames);
-        if (closestGame.distance > 10) {
+        if (closestGame.distance > 15) {
             return moves;
         }
         games = newPossibleGames.filter((g) => g.distance < closestGame.distance + THRESHOLD);

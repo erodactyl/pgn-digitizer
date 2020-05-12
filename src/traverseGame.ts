@@ -69,7 +69,7 @@ const traverseGame = (
 
     const closestGame = getClosestGame(newPossibleGames);
 
-    if (closestGame.distance > 10) {
+    if (closestGame.distance > 15) {
       return moves;
     }
 

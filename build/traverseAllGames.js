@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __importDefault(require("fs"));
 const testGames_json_1 = __importDefault(require("./testGames.json"));
 const testScans_json_1 = __importDefault(require("./testScans.json"));
 const splitMoves_1 = __importDefault(require("./splitMoves"));
@@ -40,4 +41,6 @@ const main = (keys) => {
 };
 const errors = main(Object.keys(testGames_json_1.default));
 console.log(summary_1.default(errors));
-console.log(numberOfiErrorGames_1.default([0], errors));
+numberOfiErrorGames_1.default([0, 1, 2, 3], errors);
+const json = JSON.stringify(errors);
+fs_1.default.writeFile("branchedErrors15.json", json, () => { });

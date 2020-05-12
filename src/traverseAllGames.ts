@@ -1,3 +1,4 @@
+import fs from "fs";
 import realGames from "./testGames.json";
 import scannedGames from "./testScans.json";
 import splitMoves from "./splitMoves";
@@ -53,4 +54,7 @@ const main = (keys: string[]) => {
 const errors = main(Object.keys(realGames));
 
 console.log(summary(errors));
-console.log(numberOfiErrorGames([0], errors));
+numberOfiErrorGames([0, 1, 2, 3], errors);
+
+const json = JSON.stringify(errors);
+fs.writeFile("branchedErrors15.json", json, () => {});
