@@ -1,9 +1,9 @@
 import thirdAnalysis from "./thirdAnalysis.json";
 
-const numberOfiErrorGames = (is: number[]) => {
+const numberOfiErrorGames = (is: number[], analysis?: number[]) => {
   let errors = new Array(is.length).fill(0);
 
-  for (let game of thirdAnalysis.diffs) {
+  for (let game of analysis || thirdAnalysis.diffs) {
     for (let i of is) {
       if (game === i) {
         errors[i]++;
@@ -16,4 +16,6 @@ const numberOfiErrorGames = (is: number[]) => {
   });
 };
 
-numberOfiErrorGames([0, 1]);
+// numberOfiErrorGames([0, 1]);
+
+export default numberOfiErrorGames;

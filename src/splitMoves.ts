@@ -5,12 +5,8 @@ function trim(str) {
 function preprocessMove(str: string) {
   return (
     str
-      // 0 is an illegal character in SAN, best estimate is the O from O-O of O-O-O
-      // .replace(/0/g, "O")
       // . is an illegal character, replace it
       .replace(/\./g, " ")
-      // Can't have 9, statistically best guess is a g
-      // .replace(/9/g, "g")
       // trim double spaces
       .replace(/\s\s+/g, " ")
       .trim()
@@ -23,7 +19,7 @@ function preprocessMove(str: string) {
  */
 const splitMoves = (pgn: string): string[] => {
   /* Delete move numbers */
-  const movesString = pgn.replace(/\s\d+\.(\.\.)?/g, ":");
+  const movesString = (" " + pgn).replace(/\s\d+\.(\.\.)?/g, ":");
 
   /* Trim and get array of moves, remove first empty string element */
   const dirtyMoves = trim(movesString).split(new RegExp(":")).slice(1);

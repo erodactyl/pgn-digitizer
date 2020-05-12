@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const thirdAnalysis_json_1 = __importDefault(require("./thirdAnalysis.json"));
-const numberOfiErrorGames = (is) => {
+const numberOfiErrorGames = (is, analysis) => {
     let errors = new Array(is.length).fill(0);
-    for (let game of thirdAnalysis_json_1.default.diffs) {
+    for (let game of analysis || thirdAnalysis_json_1.default.diffs) {
         for (let i of is) {
             if (game === i) {
                 errors[i]++;
@@ -17,4 +17,4 @@ const numberOfiErrorGames = (is) => {
         console.log(`Number of games with ${is[idx]} errors is ${err}`);
     });
 };
-numberOfiErrorGames([0, 1]);
+exports.default = numberOfiErrorGames;
