@@ -30,11 +30,9 @@ const main = (keys: string[]) => {
         getEditDistance.getClosestTarget
       );
 
-      const traversedMoves = splitMoves(traversed);
-
       for (let i = 0; i < realMoves.length; i++) {
         const realMove = realMoves[i];
-        const traversedMove = traversedMoves[i];
+        const traversedMove = traversed[i];
         if (realMove !== traversedMove) {
           // console.log(realMove, traversedMove);
           currErrs++;

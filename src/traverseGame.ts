@@ -1,47 +1,47 @@
 import { Chess, ChessInstance } from "chess.js";
 
+type GetClosestTarget = (
+  source: string,
+  targets: string[]
+) => {
+  target: string;
+  dist: number;
+};
+
 const move = (
   game: ChessInstance,
   moveStr: string,
-  getClosestTarget: (
-    source: string,
-    targets: string[]
-  ) => {
-    target: string;
-    dist: number;
-  }
+  getClosestTarget: GetClosestTarget
 ) => {
+  let dist = 0;
   const moved = game.move(moveStr);
   if (moved === null) {
     // console.log("here");
     const legalMoves = game.moves();
     const closestMove = getClosestTarget(moveStr, legalMoves);
     game.move(closestMove.target);
+    dist = closestMove.dist;
   }
 
-  return game;
+  return dist;
 };
 
-const traverseGame = (
-  moves: string[],
-  getClosestTarget: (
-    source: string,
-    targets: string[]
-  ) => {
-    target: string;
-    dist: number;
-  }
-) => {
+const traverseGame = (moves: string[], getClosestTarget: GetClosestTarget) => {
+  let totalDist = 0;
   const game = new Chess();
 
-  moves.forEach((currMove) => {
-    // console.log(currMove);
-    move(game, currMove, getClosestTarget);
-  });
+  for (const currMove of moves) {
+    totalDist += move(game, currMove, getClosestTarget);
+    if (totalDist > 10) {
+      break;
+    }
+  }
 
-  // console.log(game.pgn());
+  if (totalDist > 10) {
+    return moves;
+  }
 
-  return game.pgn();
+  return game.history();
 };
 
 export default traverseGame;

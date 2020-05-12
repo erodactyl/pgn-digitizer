@@ -22,10 +22,9 @@ const main = (keys) => {
             const realMoves = splitMoves_1.default(realGame);
             const scannedMoves = splitMoves_1.default(scannedGame);
             const traversed = traverseGame_1.default(scannedMoves, getEditDistance.getClosestTarget);
-            const traversedMoves = splitMoves_1.default(traversed);
             for (let i = 0; i < realMoves.length; i++) {
                 const realMove = realMoves[i];
-                const traversedMove = traversedMoves[i];
+                const traversedMove = traversed[i];
                 if (realMove !== traversedMove) {
                     currErrs++;
                 }
