@@ -22,10 +22,10 @@ function createEditDistancesFromModel(model) {
             .fill(null)
             .map(() => Array(target.length + 1).fill(0));
         for (let i = 1; i <= source.length; i++) {
-            distances[i][0] = i;
+            distances[i][0] = distances[i - 1][0] + getDeletionCost(source[i]);
         }
         for (let j = 1; j <= target.length; j++) {
-            distances[0][j] = j;
+            distances[0][j] = distances[0][j - 1] + getInsertionCost(target[j]);
         }
         for (let j = 1; j <= target.length; j++) {
             for (let i = 1; i <= source.length; i++) {
