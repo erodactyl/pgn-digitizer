@@ -98,6 +98,7 @@ const main = (keys) => {
 };
 const keys = Object.keys(akopianGames_json_1.default);
 const coefficients = main(keys);
+fs_1.default.writeFile("coefficients.json", JSON.stringify(coefficients), () => { });
 const model = generateModel_1.default(coefficients);
 const json = JSON.stringify(model);
 fs_1.default.writeFile("model.json", json, () => { });

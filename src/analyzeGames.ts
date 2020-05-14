@@ -109,6 +109,8 @@ const main = (keys: string[]) => {
 const keys = Object.keys(realGames);
 const coefficients = main(keys);
 
+fs.writeFile("coefficients.json", JSON.stringify(coefficients), () => {});
+
 const model = generateModel(coefficients);
 
 const json = JSON.stringify(model);
